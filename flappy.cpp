@@ -50,7 +50,7 @@ FlappyBird::FlappyBird() : gameStarted(false) {
   //游戏结束显示的文字 啥的
   txt_gameover.setFont(font);
   txt_gameover.setString("Press SPACE to restart");
-  txt_gameover.setPosition(200, 300);
+  txt_gameover.setPosition(200, 50);
   txt_gameover.setCharacterSize(50);
   txt_gameover.setOutlineThickness(3);
 
@@ -102,9 +102,9 @@ void FlappyBird::events(){
     std::vector<int> scores = loadScores();  // 加载所有分数
     std::sort(scores.begin(), scores.end(), std::greater<int>());  // 排序分数
 
-    // 打印或显示分数排行榜
+    leaderboardTexts.clear();
     for (int i = 0; i < scores.size() && i < 10; ++i) {
-      std::cout << "Top " << (i + 1) << ": " << scores[i] << std::endl;
+      leaderboardTexts.push_back("Top " + std::to_string(i + 1) + ": " + std::to_string(scores[i]));
     }
 
     score = 0;
@@ -121,20 +121,33 @@ void FlappyBird::events(){
 
 
 void FlappyBird::draw(){
-  window->clear(sf::Color::Black);//清屏
-  window->draw(*background);//填充init过的spirate
+  window->clear(sf::Color::Black);  // 清屏
+  window->draw(*background);  // 填充背景
 
   for(auto &p : pipes){
-   window->draw(p); //遍历pipes所有管道并且画出，pipes存储的是sprite每个元素代表一个管道
+    window->draw(p);  // 绘制管道
   }
 
-  window->draw(*bird);//画鸟
+  window->draw(*bird);  // 绘制小鸟
 
-  if( gameover ){
-    window->draw( txt_gameover );//结束
+  if(gameover){
+    window->draw(txt_gameover);  // 绘制游戏结束文本
+
+    // 显示排行榜
+    float yPos = 150.f;  // 排行榜开始的y位置
+    for(const auto& text : leaderboardTexts){
+      sf::Text rankText;
+      rankText.setFont(font);
+      rankText.setString(text);
+      rankText.setCharacterSize(36);
+      rankText.setFillColor(sf::Color::White);
+      rankText.setPosition(450, yPos);
+      window->draw(rankText);
+      yPos += 30.f;  // 更新位置，以便下一行文本
+    }
   }
 
-  window->draw(txt_score);//
+  window->draw(txt_score);  // 绘制得分
 
   window->display();
 }
