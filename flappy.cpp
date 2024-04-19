@@ -119,7 +119,6 @@ void FlappyBird::events(){
   }
 }
 
-
 void FlappyBird::draw(){
   window->clear(sf::Color::Black);  // 清屏
   window->draw(*background);  // 填充背景
@@ -143,7 +142,7 @@ void FlappyBird::draw(){
       rankText.setFillColor(sf::Color::White);
       rankText.setPosition(450, yPos);
       window->draw(rankText);
-      yPos += 30.f;  // 更新位置，以便下一行文本
+      yPos += 40.f;  // 更新位置，以便下一行文本
     }
   }
 

@@ -20,6 +20,7 @@ class FlappyBird {
   sf::Font font;
   sf::Text txt_score, txt_gameover;
 
+
   std::vector<std::string> leaderboardTexts;
   protected:
    void events();
