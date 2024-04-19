@@ -1,22 +1,29 @@
 #include "flappy.hpp"
 #include "iostream"
-
 void FlappyBird::displayDifficultyMenu() {
+    // 确保字体已加载
+    if (!font.loadFromFile("./resources/font/flappybird.ttf")) {
+        std::cerr << "Failed to load font\n";
+        return;
+    }
+
     sf::Text easy("Easy", font, 50);
     sf::Text medium("Medium", font, 50);
     sf::Text hard("Hard", font, 50);
 
-    easy.setPosition(100, 150);
-    medium.setPosition(100, 250);
-    hard.setPosition(100, 350);
+    // 设置文本的位置
+    easy.setPosition(700, 150);
+    medium.setPosition(700, 250);
+    hard.setPosition(700, 350);
 
-    difficultyOptions.push_back(easy);
-    difficultyOptions.push_back(medium);
-    difficultyOptions.push_back(hard);
+    // 设置文本的颜色（可选）
+    easy.setFillColor(sf::Color::Green);
+    medium.setFillColor(sf::Color::Yellow);
+    hard.setFillColor(sf::Color::Red);
 
-    window->clear(sf::Color::Black);
+    bool difficultyChosen = false;
 
-    while (window->isOpen()) {
+    while (!difficultyChosen && window->isOpen()) {
         sf::Event event;
         while (window->pollEvent(event)) {
             if (event.type == sf::Event::Closed)
@@ -24,16 +31,26 @@ void FlappyBird::displayDifficultyMenu() {
 
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    for (int i = 0; i < difficultyOptions.size(); ++i) {
-                        if (difficultyOptions[i].getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
-                            applyDifficultySettings(static_cast<Difficulty>(i));
-                            return;  // Return after setting the difficulty
-                        }
+                    sf::Vector2f mousePos = window->mapPixelToCoords({event.mouseButton.x, event.mouseButton.y});
+                    if (easy.getGlobalBounds().contains(mousePos)) {
+                        applyDifficultySettings(Difficulty::Easy);
+                        difficultyChosen = true;
+                    } else if (medium.getGlobalBounds().contains(mousePos)) {
+                        applyDifficultySettings(Difficulty::Medium);
+                        difficultyChosen = true;
+                    } else if (hard.getGlobalBounds().contains(mousePos)) {
+                        applyDifficultySettings(Difficulty::Hard);
+                        difficultyChosen = true;
                     }
                 }
             }
         }
 
+        // 重新绘制背景和主界面（如果需要）
+        // drawBackground();
+        // drawMainMenu();
+
+        // 绘制难度选择文本
         window->draw(easy);
         window->draw(medium);
         window->draw(hard);
@@ -220,6 +237,8 @@ void FlappyBird::draw(){
 void FlappyBird::run(){
   //  Difficulty difficulty = chooseDifficulty();
 //    applyDifficultySettings(difficulty);
+draw();//绘制总函数
+
 displayDifficultyMenu();
   while( window->isOpen() ){
     events();//时间总处理
