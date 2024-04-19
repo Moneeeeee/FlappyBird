@@ -6,7 +6,16 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+enum class Difficulty {
+    Easy,
+    Medium,
+    Hard
+};
 
+struct DifficultySetting {
+    float gravity;
+    float spaceBetweenPipes;  // 管道间的间距
+};
 class FlappyBird {
 
   std::shared_ptr<sf::RenderWindow> window;
@@ -19,8 +28,9 @@ class FlappyBird {
   bool gameStarted;
   sf::Font font;
   sf::Text txt_score, txt_gameover;
-
-
+     // std::shared_ptr<sf::RenderWindow> window;
+    std::map<Difficulty, DifficultySetting> settings;
+std::vector<sf::Text> difficultyOptions;
   std::vector<std::string> leaderboardTexts;
   protected:
    void events();
@@ -33,4 +43,7 @@ class FlappyBird {
   public:
    FlappyBird();
    void run();
+    Difficulty chooseDifficulty();
+    void applyDifficultySettings(Difficulty difficulty);
+void displayDifficultyMenu();
 };

@@ -1,6 +1,70 @@
 #include "flappy.hpp"
 #include "iostream"
 
+void FlappyBird::displayDifficultyMenu() {
+    sf::Text easy("Easy", font, 50);
+    sf::Text medium("Medium", font, 50);
+    sf::Text hard("Hard", font, 50);
+
+    easy.setPosition(100, 150);
+    medium.setPosition(100, 250);
+    hard.setPosition(100, 350);
+
+    difficultyOptions.push_back(easy);
+    difficultyOptions.push_back(medium);
+    difficultyOptions.push_back(hard);
+
+    window->clear(sf::Color::Black);
+
+    while (window->isOpen()) {
+        sf::Event event;
+        while (window->pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window->close();
+
+            if (event.type == sf::Event::MouseButtonPressed) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    for (int i = 0; i < difficultyOptions.size(); ++i) {
+                        if (difficultyOptions[i].getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
+                            applyDifficultySettings(static_cast<Difficulty>(i));
+                            return;  // Return after setting the difficulty
+                        }
+                    }
+                }
+            }
+        }
+
+        window->draw(easy);
+        window->draw(medium);
+        window->draw(hard);
+        window->display();
+    }
+}
+Difficulty FlappyBird::chooseDifficulty() {
+    std::cout << "Choose difficulty:\n";
+    std::cout << "1. Easy\n";
+    std::cout << "2. Medium\n";
+    std::cout << "3. Hard\n";
+    int choice;
+    std::cin >> choice;
+    switch (choice) {
+        case 1: return Difficulty::Easy;
+        case 2: return Difficulty::Medium;
+        case 3: return Difficulty::Hard;
+        default: return Difficulty::Easy;  // 默认为简单难度
+    }
+}
+void FlappyBird::applyDifficultySettings(Difficulty difficulty) {
+    settings = {
+        {Difficulty::Easy, {0.2f, 300.f}},
+        {Difficulty::Medium, {0.4f, 250.f}},
+        {Difficulty::Hard, {0.6f, 200.f}}
+    };
+
+    DifficultySetting setting = settings[difficulty];
+    gravity = setting.gravity;
+    space = setting.spaceBetweenPipes;
+}
 //Init all kinds of state value and resouce(bird.tube.img)
 //set the bird and tube position,
 FlappyBird::FlappyBird() : gameStarted(false) {
@@ -154,6 +218,9 @@ void FlappyBird::draw(){
 
 //封装了主循环，轮询响应事件
 void FlappyBird::run(){
+  //  Difficulty difficulty = chooseDifficulty();
+//    applyDifficultySettings(difficulty);
+displayDifficultyMenu();
   while( window->isOpen() ){
     events();//时间总处理
     game();//小鸟移动、检查碰撞、更新分数等内容
