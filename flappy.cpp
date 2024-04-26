@@ -80,7 +80,7 @@ void FlappyBird::applyDifficultySettings(Difficulty difficulty) {
     settings = {
         {Difficulty::Easy, {0.1f, 300.f, 150.f}},
         {Difficulty::Medium, {0.4f, 250.f,100.f}},
-        {Difficulty::Hard, {0.6f, 200.f,50.f}}
+        {Difficulty::Hard, {0.1f, 300.f,150.f}}
     };
 
     DifficultySetting setting = settings[difficulty];
@@ -121,7 +121,7 @@ bird2->setTexture(flappy);
 
 
   bird2->setPosition(
-    500.f - flappy.getSize().x / 2.f,//设置小鸟的初始位置在窗口中间
+    300.f - flappy.getSize().x / 2.f,//设置小鸟的初始位置在窗口中间
     300.f -  flappy.getSize().y / 2.f
   );
 
@@ -142,6 +142,8 @@ bird2->setTexture(flappy);
 
   gameover = add = {false};//游戏结束标志位、添加新管道标志位
   score = {0};//得分
+gravity_incJ = 0;
+gravity_incK = 0;
 
   font.loadFromFile("./resources/font/flappybird.ttf");//字体
 
@@ -213,8 +215,8 @@ void FlappyBird::events(){
       300.f - flappy.getSize().y / 2.f
     );
    bird2->setPosition(
-      500.f - flappy.getSize().x / 2.f,
-      200.f - flappy.getSize().y / 2.f
+      300.f - flappy.getSize().x / 2.f,
+      300.f - flappy.getSize().y / 2.f
     );
     gameover = false;
     gameStarted = false;
@@ -283,20 +285,30 @@ void FlappyBird::movePipes(){
 	if (gameStarted) {
     // 管道移动和生成的代码保持不变
   
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::J)){//鼠标details
-    gravity = -8.f;//通过改变g来控制小鸟的上下，默认g = 10
-    bird->setRotation(-frame - 10.f);//根据帧数，旋转小鸟
-  }else{
-    bird->setRotation(frame - 10.f);//待修改
-  }
+printf("%d\r",gravity);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)) {
+          //  gravity_incJ = -1.f; // 控制第一只小鸟向上移动
+		gravity_incJ = -8.f;
+bird->setRotation(-frame);//根据帧数，旋转小鸟
+           // bird->move(0, gravity);
+        } else {
+            // 如果 J 没有被按下，则使用默认的重力
+           // gravity += 0.5f;
+bird->setRotation(frame);//根据帧数，旋转小鸟
+           // bird->move(0, gravity);
+        }
 
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::K)){//details
-    gravity = -8.f;//通过改变g来控制小鸟的上下，默认g = 10
-    bird2->setRotation(-frame - 10.f);//根据帧数，旋转小鸟
-  }else{
-    bird2->setRotation(frame - 10.f);//待修改
-  }
-
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)) {
+           // gravity_incK = -1.f; // 控制第二只小鸟向上移动
+		gravity_incK = -8.f;
+            //bird2->move(0, gravity);
+bird->setRotation(-frame);//根据帧数，旋转小鸟
+        } else {
+            // 如果 K 没有被按下，则使用默认的重力
+           // gravity += 0.5.f;
+            //bird2->move(0, gravity);bird->setRotation(-frame - 10.f);//根据帧数，旋转小
+bird->setRotation(frame);//根据帧数，旋转小鸟
+        }
   if( count %(int) count_flag == 0 ){//主循环采样一半，就会生成新管道，可以控制管道的生成速度
     int pos = std::rand() % 275 + 175;//纵向位置随机，
 
@@ -369,7 +381,7 @@ void FlappyBird::game(){
     setAnimeBird();//模拟小鸟扑动，改变纹理实现的
     moveBird();//小鸟上下，根据g改变小鸟位置，模拟重力
     movePipes();//管道的逻辑，移动的逻辑
-printf("%d\r\n",two_bird);
+//printf("%d\r\n",two_bird);
   }
 }
 
@@ -394,12 +406,13 @@ bird2->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));
 void FlappyBird::moveBird(){
   if (gameStarted) {
    // bird->move(0, gravity);
-    gravity += 0.5f;
+ //   gravity += 0.5f;
 
 if(two_bird == 1){
-	bird->move(0, gravity);
-	bird2->move(0, gravity);
-	gravity += 0.5f;
+	bird->move(0, gravity_incJ);
+	bird2->move(0, gravity_incK);
+	gravity_incJ += 0.5f;
+	gravity_incK += 0.5f;
     // Check if bird is out of window bounds
     if(bird->getPosition().y > window->getSize().y || bird->getPosition().y < 0) {
       gameover = true;
@@ -409,7 +422,7 @@ if(two_bird == 1){
   }
 }
 if(two_bird == 0){
-    bird->move(0, gravity);
+    bird->move(0, gravity_incJ);
     gravity += 0.5f;
   if(bird->getPosition().y > window->getSize().y || bird->getPosition().y < 0) {
       gameover = true;

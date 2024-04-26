@@ -20,7 +20,7 @@ struct DifficultySetting {
 class FlappyBird {
 
   std::shared_ptr<sf::RenderWindow> window;
-  float gravity, frame, space,count_flag;
+  float gravity, frame, space,count_flag,gravity_incJ,gravity_incK;
 int two_bird;
   int count, score;
   sf::Texture bg, flappy, pipe;
