@@ -492,6 +492,7 @@ void FlappyBird::checkCollision(sf::Sprite* bird, sf::Sprite& pipe) {
 
 
 
+
 void FlappyBird::game(){
   if(!gameover){//游戏核心逻辑了
     setAnimeBird();//模拟小鸟扑动，改变纹理实现的
