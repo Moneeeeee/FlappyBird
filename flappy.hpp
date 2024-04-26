@@ -55,4 +55,5 @@ class FlappyBird {
         void spawnPipes();
         void updatePipes();
         void handleCollisions(std::size_t pipeIndex);
+        void checkCollision(sf::Sprite* bird, sf::Sprite& pipe);
 };
