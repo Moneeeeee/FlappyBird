@@ -21,7 +21,7 @@ struct DifficultySetting {
 
 class FlappyBird {
 
-    float gravity, frame, space,count_flag,gravity_incJ,gravity_incK;
+    float gravity, frame, space,count_flag,bird1Gravity,bird2Gravity;
     int two_bird;
     int count, score;
     bool gameover, add;
@@ -51,4 +51,8 @@ class FlappyBird {
         Difficulty chooseDifficulty();
         void applyDifficultySettings(Difficulty difficulty);
         void displayDifficultyMenu();
+        void handleBirdMovement();
+        void spawnPipes();
+        void updatePipes();
+        void handleCollisions(std::size_t pipeIndex);
 };
