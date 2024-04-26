@@ -42,6 +42,11 @@ class FlappyBird {
         void draw();
         void game();
         void movePipes();
+        void handleKeyboardInput();
+        void spawnNewPipes();
+        void updatePipes();
+        void checkCollisions(std::size_t i);
+        void manageScoring(std::size_t i);
         void setAnimeBird();
         void moveBird();
 

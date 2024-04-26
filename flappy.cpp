@@ -328,93 +328,156 @@ void FlappyBird::run(){
       }
 }
 
-
-//管道的事件：移动、增添
+//
+////管道的事件：移动、增添
+//void FlappyBird::movePipes(){
+//	if (gameStarted) {
+//    // 管道移动和生成的代码保持不变
+//        printf("%d\r",gravity);
+//        if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)) {
+//            bird1Gravity  = -8.f;
+//            bird->setRotation(-frame);//根据帧数，旋转小鸟
+//        } else {
+//            // 如果 J 没有被按下，则使用默认的重力
+//           // gravity += 0.5f;
+//            bird->setRotation(frame);//根据帧数，旋转小鸟
+//           // bird->move(0, gravity);
+//        }
+//        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)) {
+//            bird2Gravity = -8.f;
+//            bird->setRotation(-frame);//根据帧数，旋转小鸟
+//            // bird2Gravity = -1.f; // 控制第二只小鸟向上移动
+//            //bird2->move(0, gravity);
+//        } else {
+//            // 如果 K 没有被按下，则使用默认的重力
+//            // gravity += 0.5.f;
+//            //bird2->move(0, gravity);bird->setRotation(-frame - 10.f);//根据帧数，旋转小
+//            bird->setRotation(frame);//根据帧数，旋转小鸟
+//        }
+//        if( count %(int) count_flag == 0 ){//主循环采样一半，就会生成新管道，可以控制管道的生成速度
+//            int pos = std::rand() % 275 + 175;//纵向位置随机，
+//
+//            pipeBottom->setPosition(1000, pos + space);//端点固定在1000（窗口）
+//            pipeTop->setPosition(1000, pos);//确保每次都出现在屏幕外，然后移动进来
+//
+//            pipes.push_back(*pipeBottom);
+//            pipes.push_back(*pipeTop);//移动
+//        }
+//        for (std::size_t i {}; i < pipes.size(); ++i) {//遍历管道。判断碰撞
+//            if(two_bird == 1 ){
+//                if( pipes[i].getGlobalBounds().intersects(bird->getGlobalBounds())){
+//                    bird->move(15.f, 0);//发生碰撞就移动（向右），15
+//
+//                      if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
+//                        bird->move(0, -15.f);
+//                      }else{
+//                        bird->move(0, 15.f);
+//                      }
+//                      gameover = true;//结束标志位
+//                }
+//                if( pipes[i].getGlobalBounds().intersects(bird2->getGlobalBounds())){
+//                  bird2->move(15.f, 0);//发生碰撞就移动（向右），15
+//
+//                  if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
+//                    bird2->move(0, -15.f);
+//                  }else{
+//                    bird2->move(0, 15.f);
+//                  }
+//	                gameover = true;//结束标志位
+//                }
+//
+//            }
+//            if(two_bird == 0){
+//               if( pipes[i].getGlobalBounds().intersects(bird->getGlobalBounds())){
+//                  bird->move(15.f, 0);//发生碰撞就移动（向右），15
+//                  if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
+//                    bird->move(0, -15.f);
+//                  }else{
+//                    bird->move(0, 15.f);
+//                  }
+//                  gameover = true;//结束标志位
+//                }
+//            }
+//
+//           if( pipes[i].getPosition().x < -100 ){
+//             pipes.erase(pipes.begin() + i );
+//           } //如果管道移动到了左侧外面，删除
+//
+//           pipes[i].move(-4.f, 0);//每次迭代都移动4，模拟管道向小鸟移动的效果
+//
+//           if(pipes[i].getPosition().x == 448 && !add ){//记录分数、根据管道位置判断的
+//                //add防止误判。
+//                std::cout << pipes[i].getPosition().x << '\n';
+//                txt_score.setString(std::to_string(++score));
+//                add = true;
+//           }else{
+//                add = false;
+//           }
+//
+//        }
+//    }
+//}
 void FlappyBird::movePipes(){
-	if (gameStarted) {
-    // 管道移动和生成的代码保持不变
-        printf("%d\r",gravity);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)) {
-            bird1Gravity  = -8.f;
-            bird->setRotation(-frame);//根据帧数，旋转小鸟
-        } else {
-            // 如果 J 没有被按下，则使用默认的重力
-           // gravity += 0.5f;
-            bird->setRotation(frame);//根据帧数，旋转小鸟
-           // bird->move(0, gravity);
+    if (!gameStarted) return;
+
+    handleKeyboardInput();
+    spawnNewPipes();
+    updatePipes();
+}
+
+void FlappyBird::handleKeyboardInput() {
+    float rotationAdjustment = (sf::Keyboard::isKeyPressed(sf::Keyboard::J) || sf::Keyboard::isKeyPressed(sf::Keyboard::K)) ? -frame : frame;
+    bird->setRotation(rotationAdjustment);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)) {
+        bird1Gravity = -8.f;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)) {
+        bird2Gravity = -8.f;
+    }
+}
+
+void FlappyBird::spawnNewPipes() {
+    if (count % static_cast<int>(count_flag) == 0) {
+        int pos = std::rand() % 275 + 175;
+        pipeBottom->setPosition(1000, pos + space);
+        pipeTop->setPosition(1000, pos);
+        pipes.push_back(*pipeBottom);
+        pipes.push_back(*pipeTop);
+    }
+}
+
+void FlappyBird::updatePipes() {
+    for (std::size_t i = 0; i < pipes.size(); ++i) {
+        pipes[i].move(-4.f, 0);
+        if (pipes[i].getPosition().x < -100) {
+            pipes.erase(pipes.begin() + i--);
+            continue;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)) {
-            bird2Gravity = -8.f;
-            bird->setRotation(-frame);//根据帧数，旋转小鸟
-            // bird2Gravity = -1.f; // 控制第二只小鸟向上移动
-            //bird2->move(0, gravity);
-        } else {
-            // 如果 K 没有被按下，则使用默认的重力
-            // gravity += 0.5.f;
-            //bird2->move(0, gravity);bird->setRotation(-frame - 10.f);//根据帧数，旋转小
-            bird->setRotation(frame);//根据帧数，旋转小鸟
+        checkCollisions(i);
+        manageScoring(i);
+    }
+}
+
+void FlappyBird::checkCollisions(std::size_t i) {
+    sf::Sprite* birds[] = {bird, bird2};
+    for (int b = 0; b < (two_bird ? 2 : 1); b++) {
+        if (pipes[i].getGlobalBounds().intersects(birds[b]->getGlobalBounds())) {
+            birds[b]->move(15.f, 0);
+            float yMove = (pipes[i].getScale().y < 0) ? -15.f : 15.f;
+            birds[b]->move(0, yMove);
+            gameover = true;
         }
-        if( count %(int) count_flag == 0 ){//主循环采样一半，就会生成新管道，可以控制管道的生成速度
-            int pos = std::rand() % 275 + 175;//纵向位置随机，
+    }
+}
 
-            pipeBottom->setPosition(1000, pos + space);//端点固定在1000（窗口）
-            pipeTop->setPosition(1000, pos);//确保每次都出现在屏幕外，然后移动进来
-
-            pipes.push_back(*pipeBottom);
-            pipes.push_back(*pipeTop);//移动
-        }
-        for (std::size_t i {}; i < pipes.size(); ++i) {//遍历管道。判断碰撞
-            if(two_bird == 1 ){
-                if( pipes[i].getGlobalBounds().intersects(bird->getGlobalBounds())){
-                    bird->move(15.f, 0);//发生碰撞就移动（向右），15
-
-                      if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
-                        bird->move(0, -15.f);
-                      }else{
-                        bird->move(0, 15.f);
-                      }
-                      gameover = true;//结束标志位
-                }
-                if( pipes[i].getGlobalBounds().intersects(bird2->getGlobalBounds())){
-                  bird2->move(15.f, 0);//发生碰撞就移动（向右），15
-
-                  if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
-                    bird2->move(0, -15.f);
-                  }else{
-                    bird2->move(0, 15.f);
-                  }
-	                gameover = true;//结束标志位
-                }
-
-            }
-            if(two_bird == 0){
-               if( pipes[i].getGlobalBounds().intersects(bird->getGlobalBounds())){
-                  bird->move(15.f, 0);//发生碰撞就移动（向右），15
-                  if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
-                    bird->move(0, -15.f);
-                  }else{
-                    bird->move(0, 15.f);
-                  }
-                  gameover = true;//结束标志位
-                }
-            }
-
-           if( pipes[i].getPosition().x < -100 ){
-             pipes.erase(pipes.begin() + i );
-           } //如果管道移动到了左侧外面，删除
-
-           pipes[i].move(-4.f, 0);//每次迭代都移动4，模拟管道向小鸟移动的效果
-
-           if(pipes[i].getPosition().x == 448 && !add ){//记录分数、根据管道位置判断的
-                //add防止误判。
-                std::cout << pipes[i].getPosition().x << '\n';
-                txt_score.setString(std::to_string(++score));
-                add = true;
-           }else{
-                add = false;
-           }
-
-        }
+void FlappyBird::manageScoring(std::size_t i) {
+    if (pipes[i].getPosition().x == 448 && !add) {
+        std::cout << pipes[i].getPosition().x << '\n';
+        txt_score.setString(std::to_string(++score));
+        add = true;
+    } else {
+        add = false;
     }
 }
 
