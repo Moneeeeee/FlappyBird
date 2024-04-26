@@ -423,7 +423,7 @@ if(two_bird == 1){
 }
 if(two_bird == 0){
     bird->move(0, gravity_incJ);
-    gravity += 0.5f;
+    gravity_incJ += 0.5f;
   if(bird->getPosition().y > window->getSize().y || bird->getPosition().y < 0) {
       gameover = true;
 }
