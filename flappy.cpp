@@ -21,6 +21,10 @@ void FlappyBird::displayDifficultyMenu() {
     medium.setFillColor(sf::Color::Yellow);
     hard.setFillColor(sf::Color::Red);
 
+//two_bird = 0;
+ gravity =  frame = {0.f};//初始化重力、帧率为0
+  space = {220.f};//管道之间的空隙
+count_flag ={ 0};
     bool difficultyChosen = false;
 
     while (!difficultyChosen && window->isOpen()) {
@@ -40,6 +44,7 @@ void FlappyBird::displayDifficultyMenu() {
                         difficultyChosen = true;
                     } else if (hard.getGlobalBounds().contains(mousePos)) {
                         applyDifficultySettings(Difficulty::Hard);
+			two_bird = 1;
                         difficultyChosen = true;
                     }
                 }
@@ -73,14 +78,15 @@ Difficulty FlappyBird::chooseDifficulty() {
 }
 void FlappyBird::applyDifficultySettings(Difficulty difficulty) {
     settings = {
-        {Difficulty::Easy, {0.2f, 300.f}},
-        {Difficulty::Medium, {0.4f, 250.f}},
-        {Difficulty::Hard, {0.6f, 200.f}}
+        {Difficulty::Easy, {0.1f, 300.f, 150.f}},
+        {Difficulty::Medium, {0.4f, 250.f,100.f}},
+        {Difficulty::Hard, {0.6f, 200.f,50.f}}
     };
 
     DifficultySetting setting = settings[difficulty];
     gravity = setting.gravity;
     space = setting.spaceBetweenPipes;
+count_flag = setting.count;
 }
 //Init all kinds of state value and resouce(bird.tube.img)
 //set the bird and tube position,
@@ -93,8 +99,7 @@ FlappyBird::FlappyBird() : gameStarted(false) {
   window->setPosition(sf::Vector2i(0, 0));//窗口位置，左上角
   window->setFramerateLimit( 60 );//最大帧率60
 
-  gravity =  frame = {0.f};//初始化重力、帧率为0
-  space = {220.f};//管道之间的空隙
+ two_bird = 0;
   count = {0};//计数器，记录管道生成频率等等周期性事件
 
   bg.loadFromFile("./resources/img/background.png");//加载背景
@@ -104,13 +109,21 @@ FlappyBird::FlappyBird() : gameStarted(false) {
 
   background = std::make_shared<sf::Sprite>();//创建sprite对象
   bird = std::make_shared<sf::Sprite>();
+bird2 = std::make_shared<sf::Sprite>();
   pipeBottom = std::make_shared<sf::Sprite>();
   pipeTop = std::make_shared<sf::Sprite>();
 
   background->setTexture(bg);//给sprite应用纹理
   bird->setTexture(flappy);
+bird2->setTexture(flappy);
   pipeBottom->setTexture(pipe);
   pipeTop->setTexture(pipe);
+
+
+  bird2->setPosition(
+    500.f - flappy.getSize().x / 2.f,//设置小鸟的初始位置在窗口中间
+    300.f -  flappy.getSize().y / 2.f
+  );
 
   bird->setPosition(
     500.f - flappy.getSize().x / 2.f,//设置小鸟的初始位置在窗口中间
@@ -119,6 +132,10 @@ FlappyBird::FlappyBird() : gameStarted(false) {
 
   bird->setScale(2.f, 2.f);//小鸟大小
   bird->setTextureRect(sf::IntRect(0, 0, 34, 24));//纹理矩形，用于碰撞判断
+
+  bird2->setScale(2.f, 2.f);//小鸟大小
+  bird2->setTextureRect(sf::IntRect(0, 0, 34, 24));//纹理矩形，用于碰撞判断
+
 
   pipeBottom->setScale(1.5f, 1.5f);//上下管道，负，反向缩放
   pipeTop->setScale(1.5f, -1.5f);
@@ -171,7 +188,7 @@ void FlappyBird::events(){
   while( window->pollEvent( *e ) ){
     if( e->type == sf::Event::Closed){
       window->close();
-    } else if (e->type == sf::Event::MouseButtonPressed) {
+    } else if (e->type == sf::Event::KeyPressed) {
       if (!gameStarted) {
         gameStarted = true;
       }
@@ -195,6 +212,10 @@ void FlappyBird::events(){
       500.f - flappy.getSize().x / 2.f,
       300.f - flappy.getSize().y / 2.f
     );
+   bird2->setPosition(
+      500.f - flappy.getSize().x / 2.f,
+      200.f - flappy.getSize().y / 2.f
+    );
     gameover = false;
     gameStarted = false;
   }
@@ -207,9 +228,12 @@ void FlappyBird::draw(){
   for(auto &p : pipes){
     window->draw(p);  // 绘制管道
   }
-
+if(two_bird==0){
   window->draw(*bird);  // 绘制小鸟
-
+}else if(two_bird == 1){
+	window->draw(*bird2);
+	window->draw(*bird);
+}
   if(gameover){
     window->draw(txt_gameover);  // 绘制游戏结束文本
 
@@ -259,14 +283,21 @@ void FlappyBird::movePipes(){
 	if (gameStarted) {
     // 管道移动和生成的代码保持不变
   
-  if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){//鼠标details
+  if(sf::Keyboard::isKeyPressed(sf::Keyboard::J)){//鼠标details
     gravity = -8.f;//通过改变g来控制小鸟的上下，默认g = 10
     bird->setRotation(-frame - 10.f);//根据帧数，旋转小鸟
   }else{
     bird->setRotation(frame - 10.f);//待修改
   }
 
-  if( count % 150 == 0 ){//主循环采样一半，就会生成新管道，可以控制管道的生成速度
+  if(sf::Keyboard::isKeyPressed(sf::Keyboard::K)){//details
+    gravity = -8.f;//通过改变g来控制小鸟的上下，默认g = 10
+    bird2->setRotation(-frame - 10.f);//根据帧数，旋转小鸟
+  }else{
+    bird2->setRotation(frame - 10.f);//待修改
+  }
+
+  if( count %(int) count_flag == 0 ){//主循环采样一半，就会生成新管道，可以控制管道的生成速度
     int pos = std::rand() % 275 + 175;//纵向位置随机，
 
     pipeBottom->setPosition(1000, pos + space);//端点固定在1000（窗口）
@@ -277,8 +308,30 @@ void FlappyBird::movePipes(){
   }
 
   for (std::size_t i {}; i < pipes.size(); ++i) {//遍历管道。判断碰撞
-
+if(two_bird == 1 ){
     if( pipes[i].getGlobalBounds().intersects(bird->getGlobalBounds())){
+      bird->move(15.f, 0);//发生碰撞就移动（向右），15
+
+      if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
+        bird->move(0, -15.f);
+      }else{
+        bird->move(0, 15.f);
+      }
+      gameover = true;//结束标志位
+    }
+    if( pipes[i].getGlobalBounds().intersects(bird2->getGlobalBounds())){
+      bird2->move(15.f, 0);//发生碰撞就移动（向右），15
+
+      if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
+        bird2->move(0, -15.f);
+      }else{
+        bird2->move(0, 15.f);
+      }
+	gameover = true;//结束标志位
+}
+}
+if(two_bird == 0){
+   if( pipes[i].getGlobalBounds().intersects(bird->getGlobalBounds())){
       bird->move(15.f, 0);//发生碰撞就移动（向右），15
 
       if( pipes[i].getScale().y < 0 ){//根据管道的方向调整小鸟的头
@@ -289,6 +342,7 @@ void FlappyBird::movePipes(){
 
       gameover = true;//结束标志位
     }
+}
 
    if( pipes[i].getPosition().x < -100 ){
      pipes.erase(pipes.begin() + i );
@@ -315,6 +369,7 @@ void FlappyBird::game(){
     setAnimeBird();//模拟小鸟扑动，改变纹理实现的
     moveBird();//小鸟上下，根据g改变小鸟位置，模拟重力
     movePipes();//管道的逻辑，移动的逻辑
+printf("%d\r\n",two_bird);
   }
 }
 
@@ -324,20 +379,44 @@ void FlappyBird::setAnimeBird(){//小鸟动画
   if( frame > 3 ){
     frame -= 3;
   }
+if(two_bird == 0)
+ 
 
-  bird->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));//决定了显示纹理的那一部分
+ bird->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));//决定了显示纹理的那一部分
+if(two_bird == 1){
+bird->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));
+bird2->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));
 }
+}
+
 
 // 修改moveBird函数
 void FlappyBird::moveBird(){
   if (gameStarted) {
-    bird->move(0, gravity);
+   // bird->move(0, gravity);
     gravity += 0.5f;
 
+if(two_bird == 1){
+	bird->move(0, gravity);
+	bird2->move(0, gravity);
+	gravity += 0.5f;
     // Check if bird is out of window bounds
     if(bird->getPosition().y > window->getSize().y || bird->getPosition().y < 0) {
       gameover = true;
     }
+    if(bird2->getPosition().y > window->getSize().y || bird2->getPosition().y < 0) {
+      gameover = true;
   }
+}
+if(two_bird == 0){
+    bird->move(0, gravity);
+    gravity += 0.5f;
+  if(bird->getPosition().y > window->getSize().y || bird->getPosition().y < 0) {
+      gameover = true;
+}
+}
+
+
+}
 }
 

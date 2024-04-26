@@ -15,14 +15,16 @@ enum class Difficulty {
 struct DifficultySetting {
     float gravity;
     float spaceBetweenPipes;  // 管道间的间距
+    float count;
 };
 class FlappyBird {
 
   std::shared_ptr<sf::RenderWindow> window;
-  float gravity, frame, space;
+  float gravity, frame, space,count_flag;
+int two_bird;
   int count, score;
   sf::Texture bg, flappy, pipe;
-  std::shared_ptr<sf::Sprite> background, bird, pipeBottom, pipeTop;
+  std::shared_ptr<sf::Sprite> background, bird, pipeBottom, pipeTop,bird2;
   std::vector<sf::Sprite> pipes;
   bool gameover, add;
   bool gameStarted;
