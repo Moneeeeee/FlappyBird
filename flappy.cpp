@@ -419,25 +419,6 @@ void FlappyBird::movePipes(){
 }
 
 
-void FlappyBird::handleCollisions(std::size_t pipeIndex) {
-    auto& pipe = pipes[pipeIndex];
-    if (two_bird) {
-        checkCollision(bird, pipe);
-        checkCollision(bird2, pipe);
-    } else {
-        checkCollision(bird, pipe);
-    }
-}
-
-void FlappyBird::checkCollision(sf::Sprite* bird, sf::Sprite& pipe) {
-    if (pipe.getGlobalBounds().intersects(bird->getGlobalBounds())) {
-        bird->move(15.f, 0);
-        float yMove = (pipe.getScale().y < 0) ? -15.f : 15.f;
-        bird->move(0, yMove);
-        gameover = true;
-    }
-}
-
 
 
 
