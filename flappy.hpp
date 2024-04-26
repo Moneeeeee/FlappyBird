@@ -51,9 +51,4 @@ class FlappyBird {
         Difficulty chooseDifficulty();
         void applyDifficultySettings(Difficulty difficulty);
         void displayDifficultyMenu();
-        void handleBirdMovement();
-        void spawnPipes();
-        void updatePipes();
-        void handleCollisions(std::size_t pipeIndex);
-        void checkCollision(sf::Sprite* bird, sf::Sprite& pipe);
 };
