@@ -534,27 +534,27 @@ void FlappyBird::movePipes(){
 //
 //
 //
-//void FlappyBird::game(){
-//  if(!gameover){//游戏核心逻辑了
-//    setAnimeBird();//模拟小鸟扑动，改变纹理实现的
-//    moveBird();//小鸟上下，根据g改变小鸟位置，模拟重力
-//    movePipes();//管道的逻辑，移动的逻辑
-//    //printf("%d\r\n",two_bird);
-//  }
-//}
-//
-//void FlappyBird::setAnimeBird(){//小鸟动画
-//  frame += 0.15f;//frame控制当前帧
-//  if( frame > 3 ){
-//    frame -= 3;
-//  }
-//    if(two_bird == 0)
-//        bird->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));//决定了显示纹理的那一部分
-//    if(two_bird == 1){
-//        bird->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));
-//        bird2->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));
-//    }
-//}
+void FlappyBird::game(){
+  if(!gameover){//游戏核心逻辑了
+    setAnimeBird();//模拟小鸟扑动，改变纹理实现的
+    moveBird();//小鸟上下，根据g改变小鸟位置，模拟重力
+    movePipes();//管道的逻辑，移动的逻辑
+    //printf("%d\r\n",two_bird);
+  }
+}
+
+void FlappyBird::setAnimeBird(){//小鸟动画
+  frame += 0.15f;//frame控制当前帧
+  if( frame > 3 ){
+    frame -= 3;
+  }
+    if(two_bird == 0)
+        bird->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));//决定了显示纹理的那一部分
+    if(two_bird == 1){
+        bird->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));
+        bird2->setTextureRect(sf::IntRect( 34 * (int)frame, 0, 34, 24 ));
+    }
+}
 
 
 
