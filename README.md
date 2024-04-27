@@ -20,11 +20,13 @@ cd FlappyBird
 make
 ```
 
-
-
 ---
 
+## Category
 
+测试报告、用户手册、软件报告均在FlappyBird下的Doc文件夹
+
+游戏渲染纹理、图片资源都在./resources下
 
 ## **FlappyBird 介绍**
 
