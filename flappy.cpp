@@ -592,5 +592,34 @@ void FlappyBird::moveBird() {
         }
     }
 }
+/*********
+Test
+********/
 
+//void testCollisionDetection() {
+//    Bird mockBird;
+//    Pipe mockPipe;
+//    mockBird.setPosition(100, 100);
+//    mockPipe.setPosition(100, 100);  // 碰撞位置
+//    assert(checkCollision(mockBird, mockPipe) == true);  // 应该检测到碰撞
 
+//    mockPipe.setPosition(200, 200);  // 非碰撞位置
+//    assert(checkCollision(mockBird, mockPipe) == false);  // 不应检测到碰撞
+//}
+//void testGameFlow() {
+//    Game game;
+//    game.start();  // 开始游戏
+//    game.pressSpace();  // 模拟按空格键使小鸟飞行
+//   game.updateGame();  // 更新游戏状态
+///    assert(game.scoreUpdated() == true);  // 检查得分是否更新
+//    game.simulateCollision();  // 模拟碰撞
+//    assert(game.isGameOver() == true);  // 检查游戏是否正确结束
+//}
+//void performanceTest() {
+//    Game game;
+//    game.start();
+//    double startTime = getCurrentTime();  // 获取当前时间
+//    game.pressSpace();  // 模拟按空格键
+//    double responseTime = getCurrentTime() - startTime;
+//    assert(responseTime < 0.1);  // 响应时间应小于100毫秒
+//}
